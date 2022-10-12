@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Maps</string>
     <string name="no_connection">No Connection</string>
+    <string name="distance_between_point_a_and_b">Distance Between Point A and B =</string>
 </resources>

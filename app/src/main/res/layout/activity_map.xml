@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapActivity">
@@ -9,16 +9,50 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/main"
             android:orientation="vertical">
+
             <org.osmdroid.views.MapView
                 android:id="@+id/map"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:layout_marginBottom="100dp" />
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="@string/distance_between_point_a_and_b" />
+            <TextView
+                android:id="@+id/distanceValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/distance"
+                android:textSize="16sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="0" />
+            <TextView
+                android:id="@+id/meters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/distanceValue"
+                android:textSize="16sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="Meters" />
+        </RelativeLayout>
         <ProgressBar
             android:id="@+id/avi"
             android:padding="12dp"
@@ -71,3 +105,4 @@
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>
+</layout>

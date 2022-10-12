@@ -10,6 +10,7 @@ import com.deletech.maps.models.PointA
 import com.deletech.maps.networks.NetworkUtils
 import com.deletech.maps.networks.RequestService
 import com.deletech.maps.storage.MapsDatabase
+import com.deletech.maps.storage.PreferenceManager
 import com.deletech.maps.storage.daos.PointADao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,6 +22,7 @@ class GeoPointsRepository (application: Application){
     private val context: Context
    private val getPointADao: PointADao
    private val db: MapsDatabase
+    private val preferenceManager: PreferenceManager = PreferenceManager(application)
     val geoPointsObservable = MutableLiveData<Resource<Point>>()
     val offlineGeoPointsObservable = MutableLiveData<Resource<List<PointA>>>()
     init {
@@ -54,7 +56,7 @@ class GeoPointsRepository (application: Application){
     }
     private fun getPoints() {
         GlobalScope.launch(context = Dispatchers.Main) {
-            val call = RequestService.getService("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b20iLCJpc3MiOiJodHRwOi8vMTkyLjE2OC41MC42OTo4MDkwL2xvZ2luIiwiZXhwIjoxNjY1MDA1NzczLCJhdXRob3JpdGllcyI6WyJzdHVkZW50OnJlYWQiLCJST0xFX0FETUlOVFJBSU5FRSIsImNvdXJzZTpyZWFkIl19.LfyEG2fP7UYvyvkhgsODm4l0LeUwiTEAKDjFktPhqxg").points()
+            val call = RequestService.getService("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b20iLCJpc3MiOiJodHRwOi8vMTkyLjE2OC41MC42OTo4MDkwL2xvZ2luIiwiZXhwIjoxNjY1NTI4MDY4LCJhdXRob3JpdGllcyI6WyJzdHVkZW50OnJlYWQiLCJST0xFX0FETUlOVFJBSU5FRSIsImNvdXJzZTpyZWFkIl19.t912RadC7Hvsxn1FHU-QxAum3Lvz4ouM9eh0_CMnMWI").points()
             call.enqueue(object : Callback<Point> {
                 override fun onFailure(call: Call<Point>?, t: Throwable?) {
                     setIsError(t.toString())

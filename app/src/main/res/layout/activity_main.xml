@@ -15,24 +15,45 @@
             android:layout_height="match_parent"
             android:id="@+id/main"
             android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt"
-        android:gravity="center"
-        android:text=""
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-            <Button
+            <org.osmdroid.views.MapView
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="100dp" />
+            <TextView
+                android:id="@+id/distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:id="@+id/button"
-                android:layout_gravity="center"
-                android:text="Map" />
+                android:textSize="16sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="@string/distance_between_point_a_and_b" />
+            <TextView
+                android:id="@+id/distanceValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/distance"
+                android:textSize="16sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="0" />
+            <TextView
+                android:id="@+id/meters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:layout_toRightOf="@+id/distanceValue"
+                android:textSize="16sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="Meters" />
+
         </RelativeLayout>
         <ProgressBar
             android:id="@+id/avi"
@@ -67,7 +88,7 @@
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="28dp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:gravity="center"
                 android:text="" />
 

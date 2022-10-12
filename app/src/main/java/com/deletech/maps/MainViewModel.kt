@@ -4,21 +4,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.deletech.maps.custom.Resource
-import com.deletech.maps.models.LineData
-import com.deletech.maps.models.Point
-import com.deletech.maps.models.PointA
-import com.deletech.maps.models.PolygonData
+import com.deletech.maps.models.*
 import com.deletech.maps.repository.GeoPointsRepository
 import com.deletech.maps.repository.LinePointsRepository
 import com.deletech.maps.repository.PolygonRepository
-
 class MainViewModel (application: Application): AndroidViewModel(application){
     internal var geoPointsRepository: GeoPointsRepository
     internal var linePointsRepository: LinePointsRepository
     internal var polygonRepository:PolygonRepository
     private var  geoPointsObservable= MediatorLiveData<Resource<Point>>()
-    private var  linePointsObservable= MediatorLiveData<Resource<LineData>>()
-    private var  polygonObservable=MediatorLiveData<Resource<PolygonData>>()
+    private var  linePointsObservable= MediatorLiveData<Resource<Geometry>>()
+    private var  polygonObservable=MediatorLiveData<Resource<GeometryPolygon>>()
     private val offlineGeoPointsObservable = MediatorLiveData<Resource<List<PointA>>>()
     init {
         geoPointsRepository = GeoPointsRepository(application)
@@ -38,7 +34,7 @@ class MainViewModel (application: Application): AndroidViewModel(application){
     fun getGeoLine(){
         linePointsRepository.line()
     }
-    fun observeGeoLinePoints(): LiveData<Resource<LineData>> {
+    fun observeGeoLinePoints(): LiveData<Resource<Geometry>> {
         return linePointsObservable
     }
     fun getGeoPolygon(){
@@ -47,7 +43,7 @@ class MainViewModel (application: Application): AndroidViewModel(application){
     fun getOfflinePoint(){
        geoPointsRepository.getOfflinePoints()
     }
-    fun polygonObservable(): LiveData<Resource<PolygonData>> {
+    fun polygonObservable(): LiveData<Resource<GeometryPolygon>> {
         return polygonObservable
     }
     fun observeOfflineGeoPointsObservable(): LiveData<Resource<List<PointA>>> {

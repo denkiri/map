@@ -1,10 +1,12 @@
 package com.deletech.maps;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
+
+import androidx.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
 import android.widget.Toast;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -16,31 +18,50 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.Polyline;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import com.deletech.maps.databinding.ActivityMapBinding;
+import com.deletech.maps.storage.PreferenceManager;
+
 public class MapActivity extends AppCompatActivity {
+    ActivityMapBinding binding;
     MapView map;
     double latitudeA=0;
     double longitudeA=0;
     double latitudeB=0;
     double longitudeB=0;
+    String latitudePoint;
+    String longitudePointB;
+    List<String> point;
+    double longitudePoint;
+    ArrayList<String> lineCoordinate;
+    ArrayList<String>  lineLatitude;
+    ArrayList<String>  lineLongitude;
+    List<List<List<Float>>> lineCoordinates;
+     Double coordinates;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        binding= DataBindingUtil.setContentView(this,R.layout.activity_map);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             latitudeA = extras.getDouble("latitudeA");
             longitudeA = extras.getDouble("longitudeA");
             latitudeB = extras.getDouble("latitudeB");
             longitudeB = extras.getDouble("longitudeB");
+            lineLatitude= extras.getStringArrayList("lineLatitude");
+           lineLongitude= extras.getStringArrayList("lineLongitude");
+           // Toast.makeText(this,extras.getStringArrayList("lineCoordinate").toString(),Toast.LENGTH_SHORT).show();
         }
             Context ctx = getApplicationContext();
-            Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
             map = (MapView) findViewById(R.id.map);
             map.getTileProvider().clearTileCache();
             Configuration.getInstance().setCacheMapTileCount((short) 12);
             Configuration.getInstance().setCacheMapTileOvershoot((short) 12);
-            // Create a custom tile source
+            //coordinates=Double.valueOf(new PreferenceManager(this).getType());
+        // Create a custom tile source
             map.setTileSource(new OnlineTileSourceBase("", 1, 20, 512, ".png",
                     new String[]{"https://a.tile.openstreetmap.org/"}) {
                 @Override
@@ -63,13 +84,19 @@ public class MapActivity extends AppCompatActivity {
             map.invalidate();
             createPointA();
             createPointB();
+            createPolylineAB();
             //distanceB();
-        Toast.makeText(getApplicationContext(), Double.toString(distance()),Toast.LENGTH_SHORT).show();
-           // createPolyline();
+           createPolyline();
            // createPolygon();
-
+        String num =new PreferenceManager(this).getType() ;
+        String str[] = num.split(",");
+        List<String> al = new ArrayList<String>();
+        al = Arrays.asList(str);
+        for(String s: al){
+           // Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+        }
     }
-    public double distance() {
+    public double distance(){
         double lat1 = this.latitudeA;
         double lon1 = this.longitudeA;
         double lat2 = this.latitudeB;
@@ -84,26 +111,20 @@ public class MapActivity extends AppCompatActivity {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = R * c * 1000; // convert to meters
-
         double height = el1 - el2;
-
         distance = Math.pow(distance, 2) + Math.pow(height, 2);
-
         return Math.sqrt(distance);
     }
     public void distanceB(){
         Location startPoint=new Location("locationA");
         startPoint.setLatitude(latitudeA);
         startPoint.setLongitude(longitudeA);
-
         Location endPoint=new Location("locationB");
         endPoint.setLatitude(latitudeB);
         endPoint.setLongitude(longitudeB);
-
         double distance=startPoint.distanceTo(endPoint);
         Toast.makeText(getApplicationContext(), Double.toString(distance),Toast.LENGTH_SHORT).show();
     }
-
     public void createPointA(){
         if(map == null) {
             return;
@@ -128,17 +149,36 @@ public class MapActivity extends AppCompatActivity {
         map.getOverlays().add(my_marker);
         map.invalidate();
     }
-    public void createPolyline(){
-        String[] points = {
-                "-35.016, 143.321",
-                "-34.747, 145.592",
-                "-34.364, 147.891",
-                "-33.501, 150.217",
-                "-32.306, 149.248",
-                "-32.491, 147.309"
-        };
+    public void createPolylineAB(){
         List<GeoPoint> geoPoints = new ArrayList<>();
 //add your points here
+        geoPoints.add( new GeoPoint(latitudeA, longitudeA));
+        geoPoints.add( new GeoPoint(latitudeB, longitudeB));
+        Polyline line = new Polyline();   //see note below!
+        line.setPoints(geoPoints);
+        binding.distanceValue.setText(Double.toString(Math.round((line.getDistance()*100.0)/100.0)));
+        line.setOnClickListener((polyline, mapView, eventPos) -> {
+         //  Toast.makeText(mapView.getContext(), "polyline with " + polyline.getDistance()+ "pts was tapped", Toast.LENGTH_LONG).show();
+            return false;
+        });
+        map.getOverlayManager().add(line);
+
+    }
+    public void createPolyline(){
+     //   List<GeoPoint> geoPoints = new ArrayList<>();
+        ArrayList<String> points = new ArrayList<String>(lineLatitude);
+        for(int i = 0; i < points.size(); i++)
+        {
+           latitudePoint= points.get(i);
+            Toast.makeText(this,latitudePoint.toString(),Toast.LENGTH_SHORT).show();
+        }
+        ArrayList<String> pointB = new ArrayList<String>(lineLongitude);
+        for(int i = 0; i < pointB.size(); i++)
+        {
+            longitudePointB= pointB.get(i);
+           // Toast.makeText(this,longitudePointB.toString(),Toast.LENGTH_SHORT).show();
+        }
+/*
         geoPoints.add( new GeoPoint(-35.016, 143.321));
         geoPoints.add( new GeoPoint(-34.747, 145.592));
         geoPoints.add( new GeoPoint(-34.364, 147.891));
@@ -150,14 +190,17 @@ public class MapActivity extends AppCompatActivity {
         line.setOnClickListener(new Polyline.OnClickListener() {
             @Override
             public boolean onClick(Polyline polyline, MapView mapView, GeoPoint eventPos) {
-                Toast.makeText(mapView.getContext(), "polyline with " + polyline.getPoints().size() + "pts was tapped", Toast.LENGTH_LONG).show();
+                //Toast.makeText(mapView.getContext(), "polyline with " + polyline.getPoints().size() + "pts was tapped", Toast.LENGTH_LONG).show();
                 return false;
             }
         });
         map.getOverlayManager().add(line);
 
+
+ */
     }
     public void createPolygon(){
+
         List<GeoPoint> geoPoints = new ArrayList<>();
 //add your points here
         geoPoints.add( new GeoPoint(-27.457, 153.040));
