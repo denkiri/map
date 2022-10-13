@@ -10,7 +10,9 @@ import com.deletech.maps.models.LineData
 import com.deletech.maps.models.Point
 import com.deletech.maps.networks.NetworkUtils
 import com.deletech.maps.networks.RequestService
+import com.deletech.maps.storage.MapsDatabase
 import com.deletech.maps.storage.PreferenceManager
+import com.deletech.maps.storage.daos.TokenDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -20,10 +22,12 @@ import retrofit2.Response
 
 class LinePointsRepository (application: Application){
     private val context: Context
+    private val db: MapsDatabase
     private val preferenceManager: PreferenceManager = PreferenceManager(application)
     val geoPointsObservable = MutableLiveData<Resource<Geometry>>()
     val geoCordinatesObservable = MutableLiveData<Resource<Geometry>>()
     init {
+        db =MapsDatabase.getDatabase(application)!!
         context=application.applicationContext
     }
     fun line(){
@@ -36,7 +40,7 @@ class LinePointsRepository (application: Application){
     }
     private fun getLine() {
         GlobalScope.launch(context = Dispatchers.Main) {
-            val call = RequestService.getService("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0b20iLCJpc3MiOiJodHRwOi8vMTkyLjE2OC41MC42OTo4MDkwL2xvZ2luIiwiZXhwIjoxNjY1NTI4MDY4LCJhdXRob3JpdGllcyI6WyJzdHVkZW50OnJlYWQiLCJST0xFX0FETUlOVFJBSU5FRSIsImNvdXJzZTpyZWFkIl19.t912RadC7Hvsxn1FHU-QxAum3Lvz4ouM9eh0_CMnMWI").line()
+            val call = RequestService.getService(preferenceManager.getToken()).line()
             call.enqueue(object : Callback<LineData> {
                 override fun onFailure(call: Call<LineData>?, t: Throwable?) {
                     setIsError(t.toString())
@@ -80,4 +84,5 @@ class LinePointsRepository (application: Application){
     private fun setIsError(message: String) {
         geoPointsObservable.postValue(Resource.error(message, null))
     }
+
 }

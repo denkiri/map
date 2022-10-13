@@ -28,7 +28,7 @@ object RequestService {
     private fun getClient(token: String): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor { chain ->
             val newRequest = chain.request().newBuilder()
-                .addHeader("Authorization", token)
+                .addHeader("Authorization", "Bearer $token")
                 .build()
             chain.proceed(newRequest)
         }.build()

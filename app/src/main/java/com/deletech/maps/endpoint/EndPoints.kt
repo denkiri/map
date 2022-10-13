@@ -1,8 +1,5 @@
 package com.deletech.maps.endpoint
-import com.deletech.maps.models.Feature
-import com.deletech.maps.models.LineData
-import com.deletech.maps.models.Point
-import com.deletech.maps.models.PolygonData
+import com.deletech.maps.models.*
 import retrofit2.Call
 import retrofit2.http.*
 interface EndPoints {
@@ -12,6 +9,8 @@ interface EndPoints {
     fun line(): Call<LineData>
     @GET("geo/polygon")
     fun polygon(): Call<PolygonData>
-
+    @Headers("Content-Type: application/json")
+    @POST("login")
+    fun login(@Body userData: Profile): Call<Token>
 
 }

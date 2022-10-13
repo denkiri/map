@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +12,7 @@ import com.deletech.maps.custom.Status
 import com.deletech.maps.models.Geometry
 import com.deletech.maps.models.GeometryPolygon
 import com.deletech.maps.models.Point
+import com.deletech.maps.models.Token
 import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
@@ -22,16 +22,13 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import kotlin.math.round
-import kotlin.math.roundToLong
-
-
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var pointA: List<Double>
     private lateinit var pointB: List<Double>
     private lateinit var lineCoordinates: List<List<List<Float>>>
     private lateinit var polygonCoordinates: List<List<List<Float>>>
-   private lateinit var cordinatesB:List<List<Float>>
+    private lateinit var cordinatesB:List<List<Float>>
     private lateinit var coordinatesPolygon:List<List<Float>>
     var coordinates: ArrayList<Float> = ArrayList()
 
@@ -46,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Configuration.getInstance().userAgentValue=BuildConfig.APPLICATION_ID
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        init()
+         login()
         setUpUi()
         val ctx = applicationContext
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
@@ -71,12 +68,15 @@ class MainActivity : AppCompatActivity() {
                         + mImageFilenameEnding)
             }
         })
-
     }
   private fun  init() {
-       viewModel.getGeoPoints()
-        viewModel.getGeoLine()
-       viewModel.getGeoPolygon()
+      viewModel.getGeoPoints()
+      viewModel.getGeoLine()
+      viewModel.getGeoPolygon()
+    }
+    private fun login(){
+     viewModel.login()
+
     }
     private fun setStatus(data: Resource<Point>) {
         empty_layout.visibility = View.GONE
@@ -140,6 +140,29 @@ class MainActivity : AppCompatActivity() {
             avi.visibility = View.GONE
             window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }
+        if (status == Status.ERROR) {
+            if (data.message != null) {
+                empty_text.text = data.message
+            }
+            empty_layout.visibility = View.VISIBLE
+            main.visibility = View.GONE
+            empty_button.setOnClickListener { login() }
+        }
+    }
+    private fun setStatusD(data: Resource<Token>) {
+        empty_layout.visibility = View.GONE
+        main.visibility = View.VISIBLE
+        val status: Status = data.status
+        if (status == Status.LOADING) {
+            avi.visibility = View.VISIBLE
+            window?.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+        } else if (status == Status.ERROR || status == Status.SUCCESS) {
+            avi.visibility = View.GONE
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        }
 
         if (status == Status.ERROR) {
             if (data.message != null) {
@@ -148,7 +171,7 @@ class MainActivity : AppCompatActivity() {
             }
             empty_layout.visibility = View.VISIBLE
             main.visibility = View.GONE
-            empty_button.setOnClickListener({ init() })
+            empty_button.setOnClickListener { login() }
         }
     }
     fun setUpUi() {
@@ -190,8 +213,12 @@ class MainActivity : AppCompatActivity() {
 
        }
    })
-
-
+        viewModel.observeSignIn().observe(this) {
+            setStatusD(it)
+            if (it.status == Status.SUCCESS) {
+                init()
+            }
+        }
     }
     private fun distanceAB(pointA: List<Double>,pointB: List<Double>){
         this.pointA = pointA

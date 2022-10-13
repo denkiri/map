@@ -23,12 +23,8 @@ abstract class MapsDatabase : RoomDatabase() {
              }
              return INSTANCE
          }}
-   //  abstract fun featureDao(): FeatureDao
-   //  abstract fun featurePolygonDao():FeaturePolygonDao
-    // abstract fun geometryLineDao():GeometryLineDao
-   //  abstract fun geometryPolygonDao():GeometryPolylineDao
-    // abstract fun pointDao(): PointDao
      abstract fun getPointADao():PointADao
+
 
 
  }

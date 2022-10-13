@@ -8,6 +8,7 @@ class PreferenceManager (internal var _context:Context){
     internal var PRIVATE_MODE = 0
     companion object {
         private val TYPE="TYPE"
+        private val TOKEN="TOKEN"
         private val PREF_NAME = "maps_preferences"
     }
     init {
@@ -25,6 +26,12 @@ class PreferenceManager (internal var _context:Context){
     fun getType():String{
         return pref.getString(TYPE,"dennid")!!
     }
-
+    fun saveToken(token: String){
+        editor.putString(TOKEN,token)
+        editor.commit()
+    }
+    fun getToken():String{
+        return pref.getString(TOKEN,"token")!!
+    }
 
 }
